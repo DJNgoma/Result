@@ -51,7 +51,7 @@ public enum Result<T, Error: ResultErrorType>: ResultType, CustomStringConvertib
 	/// Case analysis for Result.
 	///
 	/// Returns the value produced by applying `ifFailure` to `Failure` Results, or `ifSuccess` to `Success` Results.
-	public func analysis<Result>(@noescape ifSuccess ifSuccess: T -> Result, @noescape ifFailure: Error -> Result) -> Result {
+	public func analysis<Result>(@noescape ifSuccess: T -> Result, @noescape ifFailure: Error -> Result) -> Result {
 		switch self {
 		case let .Success(value):
 			return ifSuccess(value)
@@ -146,18 +146,18 @@ public func != <T: Equatable, Error: Equatable> (left: Result<T, Error>, right: 
 
 /// Returns the value of `left` if it is a `Success`, or `right` otherwise. Short-circuits.
 public func ?? <T, Error> (left: Result<T, Error>, @autoclosure right: () -> T) -> T {
-	return left.recover(right())
+	return left.recover(value: right())
 }
 
 /// Returns `left` if it is a `Success`es, or `right` otherwise. Short-circuits.
 public func ?? <T, Error> (left: Result<T, Error>, @autoclosure right: () -> Result<T, Error>) -> Result<T, Error> {
-	return left.recoverWith(right())
+	return left.recoverWith(result: right())
 }
 
 // MARK: - Derive result from failable closure
 
 public func materialize<T>(@noescape f: () throws -> T) -> Result<T, NSError> {
-	return materialize(try f())
+	return materialize(f: try f())
 }
 
 public func materialize<T>(@autoclosure f: () throws -> T) -> Result<T, NSError> {
@@ -210,7 +210,7 @@ infix operator >>- {
 ///
 /// This is a synonym for `flatMap`.
 public func >>- <T, U, Error> (result: Result<T, Error>, @noescape transform: T -> Result<U, Error>) -> Result<U, Error> {
-	return result.flatMap(transform)
+	return result.flatMap(transform: transform)
 }
 
 

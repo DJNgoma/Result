@@ -20,7 +20,7 @@ public protocol ResultType {
 	/// Case analysis for ResultType.
 	///
 	/// Returns the value produced by appliying `ifFailure` to the error if self represents a failure, or `ifSuccess` to the result value if self represents a success.
-	func analysis<U>(@noescape ifSuccess ifSuccess: Value -> U, @noescape ifFailure: Error -> U) -> U
+	func analysis<U>(@noescape ifSuccess: Value -> U, @noescape ifFailure: Error -> U) -> U
 
 	/// Returns the value if self represents a success, `nil` otherwise.
 	///
@@ -85,7 +85,7 @@ public extension ResultType where Error: ErrorTypeConvertible {
 				return .Success(try transform(value))
 			}
 			catch {
-				let convertedError = Error.errorFromErrorType(error)// as! Error, not deleting it as things might change
+				let convertedError = Error.errorFromErrorType(error: error)// as! Error, not deleting it as things might change
 				// Revisit this in a future version of Swift. https://twitter.com/jckarter/status/672931114944696321
 				return .Failure(convertedError)
 			}
